@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.concurrent.*;
 
 public class ConstraintSastifaction {
     private static final int GRID_SIZE = 9;
@@ -16,16 +17,29 @@ public class ConstraintSastifaction {
             {0, 0, 0, 0, 8, 0, 0, 7, 9}
         };
 
-        if (solveSudoku(board)) {
-            System.out.println("Solved Sudoku:");
-            printBoard(board);
-        } else {
-            System.out.println("No solution exists.");
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<Boolean> future = executor.submit(() -> solveBoard(board));
+
+        try {
+            // Wait for the solver to complete within 2 minutes
+            boolean solved = future.get(2, TimeUnit.MINUTES);
+            if (solved) {
+                System.out.println("Solved Sudoku:");
+                printBoard(board);
+            } else {
+                throw new Exception("No solution exists.");
+            }
+        } catch (TimeoutException e) {
+            System.out.println("Solver timed out after 2 minutes");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            executor.shutdownNow();
         }
     }
 
     //Average complexity: O(n)
-    private static boolean solveSudoku(int[][] board) {
+    private static boolean solveBoard(int[][] board) {
         // Find the most constrained cell (cell with the fewest possible values)
         int[] cell = findMostConstrainedCell(board);
         if (cell == null) {
@@ -39,7 +53,7 @@ public class ConstraintSastifaction {
         // Try each possible value
         for (int value : possibleValues) {
             board[row][col] = value;
-            if (solveSudoku(board)) {
+            if (solveBoard(board)) {
                 return true;
             }
             board[row][col] = 0;
