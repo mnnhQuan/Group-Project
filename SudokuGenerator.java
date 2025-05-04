@@ -1,3 +1,4 @@
+package soduku;
 import java.util.Random;
 
 class SudokuGenerator {
@@ -110,39 +111,33 @@ class SudokuGenerator {
         }
     }
 
-    public static void main(String[] args) {
-        System.out.println("Generating Sudoku puzzles for different test cases...\n");
-
-        // Generate 20 puzzles for each test case
-        generateTestCases("Easy", 30);       // Easy: 30 cells removed
-        generateTestCases("Medium", 45);    // Medium: 45 cells removed
-        generateTestCases("Hard", 55);      // Hard: 55 cells removed
-        generateEdgeCases();                // Edge cases: Timeout and Unsolvable
-    }
-
-    // Generate puzzles for a specific difficulty
-    static void generateTestCases(String difficulty, int k) {
+    // Test generated puzzles for a specific difficulty
+    private static void testGeneratedPuzzles(String difficulty, int k) {
         System.out.println(difficulty + " Puzzles:");
-        for (int i = 1; i <= 20; i++) {
+        for (int i = 1; i <= 5; i++) { // Test 5 puzzles for each difficulty
             System.out.println("Puzzle " + i + ":");
             int[][] puzzle = sudokuGenerator(k);
             printBoard(puzzle);
+            System.out.println("\nSolving...");
+            solveAndPrint(puzzle);
             System.out.println();
         }
     }
 
-    // Generate edge cases: Timeout and Unsolvable
-    static void generateEdgeCases() {
+    // Test edge cases: Timeout and Unsolvable
+    private static void testEdgeCases() {
         System.out.println("Edge Case: Timeout Puzzle");
-        System.out.println("Puzzle 1:");
-        int[][] timeoutPuzzle = sudokuGenerator(60); // Very hard puzzle with 60 cells removed
+        int[][] timeoutPuzzle = sudokuGenerator(60); // Very hard puzzle
         printBoard(timeoutPuzzle);
+        System.out.println("\nSolving...");
+        solveAndPrint(timeoutPuzzle);
         System.out.println();
 
         System.out.println("Edge Case: Unsolvable Puzzle");
-        System.out.println("Puzzle 1:");
         int[][] unsolvablePuzzle = generateUnsolvableSudoku();
         printBoard(unsolvablePuzzle);
+        System.out.println("\nSolving...");
+        solveAndPrint(unsolvablePuzzle);
         System.out.println();
     }
 }
