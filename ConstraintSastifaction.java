@@ -1,19 +1,8 @@
-package soduku;
+package sudoku;
 import java.util.*;
-import java.util.concurrent.*;
 
 public class ConstraintSastifaction {
     private static final int GRID_SIZE = 9;
-
-    public static void main(String[] args) {
-        System.out.println("Testing Sudoku Solver with generated puzzles...\n");
-
-        // Test with Easy, Medium, Hard, and Edge Cases
-        testGeneratedPuzzles("Easy", 30);       // Easy: 30 cells removed
-        testGeneratedPuzzles("Medium", 45);    // Medium: 45 cells removed
-        testGeneratedPuzzles("Hard", 55);      // Hard: 55 cells removed
-        testEdgeCases();                       // Edge cases: Timeout and Unsolvable
-    }
 
     //Average complexity: O(n)
     private static boolean solveBoard(int[][] board) {
@@ -99,34 +88,12 @@ public class ConstraintSastifaction {
         return possibleValues;
     }
 
-    private static void printBoard(int[][] board) {
+    public static void printBoard(int[][] board) {
         for (int row = 0; row < GRID_SIZE; row++) {
             for (int col = 0; col < GRID_SIZE; col++) {
                 System.out.print(board[row][col] + " ");
             }
             System.out.println();
-        }
-    }
-
-    private static void solveAndPrint(int[][] board) {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Future<Boolean> future = executor.submit(() -> ConstraintSastifaction.solveBoard(board));
-
-        try {
-            // Wait for the solver to complete within 2 minutes
-            boolean solved = future.get(2, TimeUnit.MINUTES);
-            if (solved) {
-                System.out.println("Solved Sudoku:");
-                printBoard(board);
-            } else {
-                System.out.println("No solution exists.");
-            }
-        } catch (TimeoutException e) {
-            System.out.println("Solver timed out after 2 minutes.");
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-        } finally {
-            executor.shutdownNow();
         }
     }
 }

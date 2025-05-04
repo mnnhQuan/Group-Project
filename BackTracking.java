@@ -1,4 +1,4 @@
-package soduku;
+package sudoku;
 import java.util.concurrent.*;
 
 public class BackTracking {

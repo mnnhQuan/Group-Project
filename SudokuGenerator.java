@@ -1,5 +1,6 @@
-package soduku;
+package sudoku;
 import java.util.Random;
+import java.util.concurrent.*;
 
 class SudokuGenerator {
 
@@ -111,8 +112,18 @@ class SudokuGenerator {
         }
     }
 
+    public static void main(String[] args) {
+        System.out.println("Testing Sudoku Solver with generated puzzles...\n");
+
+        // Test with Easy, Medium, Hard, and Edge Cases
+        testGeneratedPuzzles("Easy", 30);       // Easy: 30 cells removed
+        testGeneratedPuzzles("Medium", 45);    // Medium: 45 cells removed
+        testGeneratedPuzzles("Hard", 55);      // Hard: 55 cells removed
+        testEdgeCases();                       // Edge cases: Timeout and Unsolvable
+    }
+
     // Test generated puzzles for a specific difficulty
-    private static void testGeneratedPuzzles(String difficulty, int k) {
+    public static void testGeneratedPuzzles(String difficulty, int k) {
         System.out.println(difficulty + " Puzzles:");
         for (int i = 1; i <= 5; i++) { // Test 5 puzzles for each difficulty
             System.out.println("Puzzle " + i + ":");
@@ -125,7 +136,7 @@ class SudokuGenerator {
     }
 
     // Test edge cases: Timeout and Unsolvable
-    private static void testEdgeCases() {
+    public static void testEdgeCases() {
         System.out.println("Edge Case: Timeout Puzzle");
         int[][] timeoutPuzzle = sudokuGenerator(60); // Very hard puzzle
         printBoard(timeoutPuzzle);
@@ -139,5 +150,27 @@ class SudokuGenerator {
         System.out.println("\nSolving...");
         solveAndPrint(unsolvablePuzzle);
         System.out.println();
+    }
+
+    private static void solveAndPrint(int[][] board) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<Boolean> future = executor.submit(() -> ConstraintSastifaction.solveBoard(board));
+
+        try {
+            // Wait for the solver to complete within 2 minutes
+            boolean solved = future.get(2, TimeUnit.MINUTES);
+            if (solved) {
+                System.out.println("Solved Sudoku:");
+                printBoard(board);
+            } else {
+                System.out.println("No solution exists.");
+            }
+        } catch (TimeoutException e) {
+            System.out.println("Solver timed out after 2 minutes.");
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        } finally {
+            executor.shutdownNow();
+        }
     }
 }
