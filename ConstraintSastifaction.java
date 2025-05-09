@@ -5,7 +5,7 @@ public class ConstraintSastifaction {
     private static final int GRID_SIZE = 9;
 
     //Average complexity: O(n)
-    private static boolean solveBoard(int[][] board) {
+    public static boolean solveBoard(int[][] board) {
         // Find the most constrained cell (cell with the fewest possible values)
         int[] cell = findMostConstrainedCell(board);
         if (cell == null) {
