@@ -1,11 +1,12 @@
 package sudoku;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Random;
-import java.util.concurrent.*;
 
 class SudokuGenerator {
 
     // Generate a Sudoku grid with K empty cells
-    static int[][] sudokuGenerator(int k) {
+    public static int[][] sudokuGenerator(int k) {
         int[][] grid = new int[9][9];
         fillDiagonal(grid);
         fillRemaining(grid, 0, 0);
@@ -102,75 +103,83 @@ class SudokuGenerator {
         }
     }
 
-    // Print the Sudoku grid
-    static void printBoard(int[][] board) {
-        for (int[] row : board) {
-            for (int cell : row) {
-                System.out.print(cell + " ");
+    static void saveBoardToFile(int[][] puzzle, int[][] solution, String filename) {
+        try (FileWriter writer = new FileWriter(filename, true)) {
+            for (int[] row : puzzle) {
+                for (int cell : row) {
+                    writer.write(cell + " ");
+                }
+                writer.write("\n");
             }
-            System.out.println();
+            writer.write("\n");
+
+            for (int[] row : solution) {
+                for (int cell : row) {
+                    writer.write(cell + " ");
+                }
+                writer.write("\n");
+            }
+            writer.write("\n"); // Add a blank line between puzzles
+        } catch (IOException e) {
+            System.out.println("Error writing to file: " + e.getMessage());
         }
     }
 
-    public static void main(String[] args) {
-        System.out.println("Testing Sudoku Solver with generated puzzles...\n");
-
-        // Test with Easy, Medium, Hard, and Edge Cases
-        testGeneratedPuzzles("Easy", 30);       // Easy: 30 cells removed
-        testGeneratedPuzzles("Medium", 45);    // Medium: 45 cells removed
-        testGeneratedPuzzles("Hard", 55);      // Hard: 55 cells removed
-        testEdgeCases();                       // Edge cases: Timeout and Unsolvable
-    }
-
-    // Test generated puzzles for a specific difficulty
-    public static void testGeneratedPuzzles(String difficulty, int k) {
-        System.out.println(difficulty + " Puzzles:");
-        for (int i = 1; i <= 5; i++) { // Test 5 puzzles for each difficulty
-            System.out.println("Puzzle " + i + ":");
-            int[][] puzzle = sudokuGenerator(k);
-            printBoard(puzzle);
-            System.out.println("\nSolving...");
-            solveAndPrint(puzzle);
-            System.out.println();
+    static void saveUnsolvablePuzzleToFile(int[][] puzzle, String filename) {
+        try (FileWriter writer = new FileWriter(filename, true)) {
+            for (int[] row : puzzle) {
+                for (int cell : row) {
+                    writer.write(cell + " ");
+                }
+                writer.write("\n");
+            }
+            writer.write("\n"); // Add a blank line between puzzles
+        } catch (IOException e) {
+            System.out.println("Error writing to file: " + e.getMessage());
         }
     }
 
-    // Test edge cases: Timeout and Unsolvable
-    public static void testEdgeCases() {
-        System.out.println("Edge Case: Timeout Puzzle");
-        int[][] timeoutPuzzle = sudokuGenerator(60); // Very hard puzzle
-        printBoard(timeoutPuzzle);
-        System.out.println("\nSolving...");
-        solveAndPrint(timeoutPuzzle);
-        System.out.println();
+        public static void main(String[] args) {
+        System.out.println("Generating Sudoku puzzles and saving to file...");
 
-        System.out.println("Edge Case: Unsolvable Puzzle");
-        int[][] unsolvablePuzzle = generateUnsolvableSudoku();
-        printBoard(unsolvablePuzzle);
-        System.out.println("\nSolving...");
-        solveAndPrint(unsolvablePuzzle);
-        System.out.println();
-    }
+        String filename = "sudoku_puzzles.txt";
 
-    private static void solveAndPrint(int[][] board) {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Future<Boolean> future = executor.submit(() -> ConstraintSastifaction.solveBoard(board));
-
-        try {
-            // Wait for the solver to complete within 2 minutes
-            boolean solved = future.get(2, TimeUnit.MINUTES);
-            if (solved) {
-                System.out.println("Solved Sudoku:");
-                printBoard(board);
-            } else {
-                System.out.println("No solution exists.");
+        // Generate and save 5 Easy puzzles
+        for (int i = 0; i < 10; i++) {
+            int[][] puzzle = sudokuGenerator(30); // Easy: 30 cells removed
+            int[][] solution = new int[9][9];
+            for (int r = 0; r < 9; r++) {
+                System.arraycopy(puzzle[r], 0, solution[r], 0, 9);
             }
-        } catch (TimeoutException e) {
-            System.out.println("Solver timed out after 2 minutes.");
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-        } finally {
-            executor.shutdownNow();
+            ConstraintSastifaction.solveBoard(solution);
+            saveBoardToFile(puzzle, solution, filename);
+        }
+
+        // Generate and save 5 Medium puzzles
+        for (int i = 0; i < 10; i++) {
+            int[][] puzzle = sudokuGenerator(45); // Medium: 45 cells removed
+            int[][] solution = new int[9][9];
+            for (int r = 0; r < 9; r++) {
+                System.arraycopy(puzzle[r], 0, solution[r], 0, 9);
+            }
+            ConstraintSastifaction.solveBoard(solution);
+            saveBoardToFile(puzzle, solution, filename);
+        }
+
+        // Generate and save 5 Hard puzzles
+        for (int i = 0; i < 10; i++) {
+            int[][] puzzle = sudokuGenerator(55); // Hard: 55 cells removed
+            int[][] solution = new int[9][9];
+            for (int r = 0; r < 9; r++) {
+                System.arraycopy(puzzle[r], 0, solution[r], 0, 9);
+            }
+            ConstraintSastifaction.solveBoard(solution);
+            saveBoardToFile(puzzle, solution, filename);
+        }
+
+        for (int i = 0; i < 5; i++) {
+            int[][] unsolvablePuzzle = generateUnsolvableSudoku();
+            saveUnsolvablePuzzleToFile(unsolvablePuzzle, filename);
         }
     }
 }
