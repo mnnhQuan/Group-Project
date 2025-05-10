@@ -10,26 +10,25 @@ class SudokuGenerator {
         int[][] grid = new int[9][9];
         fillDiagonal(grid);
         fillRemaining(grid, 0, 0);
-        removeKDigits(grid, k);
         return grid;
     }
 
     // Generate an unsolvable Sudoku grid
-    static int[][] generateUnsolvableSudoku() {
+    public static int[][] generateUnsolvableSudoku() {
         int[][] grid = sudokuGenerator(20); // Start with a valid Sudoku
         grid[0][0] = grid[0][1]; // Introduce a conflict to make it unsolvable
         return grid;
     }
 
     // Fill the diagonal 3x3 matrices
-    static void fillDiagonal(int[][] grid) {
+    private static void fillDiagonal(int[][] grid) {
         for (int i = 0; i < 9; i += 3) {
             fillBox(grid, i, i);
         }
     }
 
     // Fill a 3x3 matrix
-    static void fillBox(int[][] grid, int row, int col) {
+    private static void fillBox(int[][] grid, int row, int col) {
         Random rand = new Random();
         boolean[] used = new boolean[10];
         for (int i = 0; i < 3; i++) {
@@ -45,7 +44,7 @@ class SudokuGenerator {
     }
 
     // Fill remaining blocks in the grid
-    static boolean fillRemaining(int[][] grid, int i, int j) {
+    private static boolean fillRemaining(int[][] grid, int i, int j) {
         if (i == 9) return true;
         if (j == 9) return fillRemaining(grid, i + 1, 0);
         if (grid[i][j] != 0) return fillRemaining(grid, i, j + 1);
@@ -61,7 +60,7 @@ class SudokuGenerator {
     }
 
     // Check if it's safe to place a number in a cell
-    static boolean checkIfSafe(int[][] grid, int i, int j, int num) {
+    private static boolean checkIfSafe(int[][] grid, int i, int j, int num) {
         return unUsedInRow(grid, i, num) && unUsedInCol(grid, j, num) &&
                unUsedInBox(grid, i - i % 3, j - j % 3, num);
     }
@@ -90,7 +89,7 @@ class SudokuGenerator {
     }
 
     // Remove K digits randomly to create the puzzle
-    static void removeKDigits(int[][] grid, int k) {
+    private static void removeKDigits(int[][] grid, int k) {
         Random rand = new Random();
         while (k > 0) {
             int cellId = rand.nextInt(81);
@@ -139,44 +138,44 @@ class SudokuGenerator {
         }
     }
 
+    private static int[][] copyArray(int[][] board) {
+        int[][] copiedBoard = new int[9][9];
+        for (int r = 0; r < 9; r++) {
+            System.arraycopy(board[r], 0, copiedBoard[r], 0, 9);
+        }
+        return copiedBoard;
+    }
+
         public static void main(String[] args) {
         System.out.println("Generating Sudoku puzzles and saving to file...");
 
         String filename = "sudoku_puzzles.txt";
 
-        // Generate and save 5 Easy puzzles
+        // Generate and save 10 Easy puzzles
         for (int i = 0; i < 10; i++) {
-            int[][] puzzle = sudokuGenerator(30); // Easy: 30 cells removed
-            int[][] solution = new int[9][9];
-            for (int r = 0; r < 9; r++) {
-                System.arraycopy(puzzle[r], 0, solution[r], 0, 9);
-            }
-            ConstraintSastifaction.solveBoard(solution);
+            int[][] solution = sudokuGenerator(0); // Generate a fully solved grid
+            int[][] puzzle = copyArray(solution);  // Create a copy of the solution
+            removeKDigits(puzzle, 30);           // Remove 30 digits for Easy difficulty
             saveBoardToFile(puzzle, solution, filename);
         }
 
-        // Generate and save 5 Medium puzzles
+        // Generate and save 10 Medium puzzles
         for (int i = 0; i < 10; i++) {
-            int[][] puzzle = sudokuGenerator(45); // Medium: 45 cells removed
-            int[][] solution = new int[9][9];
-            for (int r = 0; r < 9; r++) {
-                System.arraycopy(puzzle[r], 0, solution[r], 0, 9);
-            }
-            ConstraintSastifaction.solveBoard(solution);
+            int[][] solution = sudokuGenerator(0); // Generate a fully solved grid
+            int[][] puzzle = copyArray(solution);  // Create a copy of the solution
+            removeKDigits(puzzle, 45);           // Remove 45 digits for Medium difficulty
             saveBoardToFile(puzzle, solution, filename);
         }
 
-        // Generate and save 5 Hard puzzles
+        // Generate and save 10 Hard puzzles
         for (int i = 0; i < 10; i++) {
-            int[][] puzzle = sudokuGenerator(55); // Hard: 55 cells removed
-            int[][] solution = new int[9][9];
-            for (int r = 0; r < 9; r++) {
-                System.arraycopy(puzzle[r], 0, solution[r], 0, 9);
-            }
-            ConstraintSastifaction.solveBoard(solution);
+            int[][] solution = sudokuGenerator(0); // Generate a fully solved grid
+            int[][] puzzle = copyArray(solution);  // Create a copy of the solution
+            removeKDigits(puzzle, 55);           // Remove 55 digits for Hard difficulty
             saveBoardToFile(puzzle, solution, filename);
         }
 
+        //Generate and save 5 UnsolvableSudoku
         for (int i = 0; i < 5; i++) {
             int[][] unsolvablePuzzle = generateUnsolvableSudoku();
             saveUnsolvablePuzzleToFile(unsolvablePuzzle, filename);
