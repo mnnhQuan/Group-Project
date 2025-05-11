@@ -21,7 +21,7 @@ public class SudokuTest {
         try (BufferedReader puzzleReader = new BufferedReader(new FileReader(puzzleFile));
             BufferedReader answerReader = new BufferedReader(new FileReader(answerFile))) {
 
-            for (int i = 1; i <= 5; i++) { // Test 10 puzzles
+            for (int i = 1; i <= 10; i++) { // Test 10 puzzles
                 System.out.println("Puzzle " + i + ":");
 
                 // Read the puzzle and the expected solution
@@ -56,7 +56,7 @@ public class SudokuTest {
 
             // Print the report
             System.out.println("Constraint Satisfaction Report (" + difficulty + ")");
-            System.out.println("The algorithm solved correctly " + solvedCount + "/5 Sudokus");
+            System.out.println("The algorithm solved correctly " + solvedCount + "/10 Sudokus");
             System.out.println("It takes an average of " + roundedAverageTime + " ms for the algorithm to solve all the Sudokus\n");
         } catch (IOException e) {
             System.out.println("Error reading files: " + e.getMessage());
