@@ -10,6 +10,7 @@ public class SudokuTest {
         testPuzzles("Medium", "sudoku/SudokuTest/medium_puzzles.txt", "sudoku/SudokuTest/medium_solutions.txt");
         testPuzzles("Hard", "sudoku/SudokuTest/hard_puzzles.txt", "sudoku/SudokuTest/hard_solutions.txt");
         testPuzzles("Very Hard", "sudoku/SudokuTest/very_hard_puzzles.txt", "sudoku/SudokuTest/very_hard_solutions.txt");
+        testUnsolvablePuzzles("sudoku/SudokuTest/unsolvable_puzzles.txt");
     }
 
     public static void testPuzzles(String difficulty, String puzzleFile, String answerFile) {
@@ -57,6 +58,39 @@ public class SudokuTest {
             System.out.println("Constraint Satisfaction Report (" + difficulty + ")");
             System.out.println("The algorithm solved correctly " + solvedCount + "/5 Sudokus");
             System.out.println("It takes an average of " + roundedAverageTime + " ms for the algorithm to solve all the Sudokus\n");
+        } catch (IOException e) {
+            System.out.println("Error reading files: " + e.getMessage());
+        }
+    }
+
+    public static void testUnsolvablePuzzles(String puzzleFile) {
+        System.out.println("Testing Unsolvable Puzzles:");
+        try (BufferedReader puzzleReader = new BufferedReader(new FileReader(puzzleFile))) {
+
+            for (int i = 1; i <= 5; i++) { // Test 5 puzzles
+                System.out.println("Unsolvable Puzzle " + i + ":");
+
+                // Read the puzzle
+                int[][] puzzle = readBoard(puzzleReader);
+
+                // Print the puzzle
+                System.out.println("Original Puzzle:");
+                ConstraintSastifaction.printBoard(puzzle);
+
+                // Attempt to solve the puzzle
+                System.out.println("\nSolving...");
+                boolean solved = solveAndPrint(puzzle);
+
+                // Check if the solver correctly identifies the puzzle as unsolvable
+                if (!solved) {
+                    System.out.println("Correctly identified as unsolvable.");
+                } else {
+                    System.out.println("Error: Puzzle was incorrectly solved.");
+                }
+
+                System.out.println();
+            }
+
         } catch (IOException e) {
             System.out.println("Error reading files: " + e.getMessage());
         }
