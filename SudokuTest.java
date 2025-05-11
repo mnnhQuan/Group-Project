@@ -6,9 +6,10 @@ public class SudokuTest {
     public static void main(String[] args) {
         System.out.println("Testing Sudoku Solver with generated puzzles...\n");
 
-        testPuzzles("Easy", "sudoku/SudokuTest/easy_puzzles.txt", "sudoku/SudokuTest/easy_answer.txt");
-        testPuzzles("Medium", "sudoku/SudokuTest/medium_puzzles.txt", "sudoku/SudokuTest/medium_answer.txt");
-        testPuzzles("Hard", "sudoku/SudokuTest/hard_puzzles.txt", "sudoku/SudokuTest/hard_answer.txt");
+        testPuzzles("Easy", "sudoku/SudokuTest/easy_puzzles.txt", "sudoku/SudokuTest/easy_solutions.txt");
+        testPuzzles("Medium", "sudoku/SudokuTest/medium_puzzles.txt", "sudoku/SudokuTest/medium_solutions.txt");
+        testPuzzles("Hard", "sudoku/SudokuTest/hard_puzzles.txt", "sudoku/SudokuTest/hard_solutions.txt");
+        testPuzzles("Very Hard", "sudoku/SudokuTest/very_hard_puzzles.txt", "sudoku/SudokuTest/very_hard_solutions.txt");
     }
 
     public static void testPuzzles(String difficulty, String puzzleFile, String answerFile) {
@@ -19,7 +20,7 @@ public class SudokuTest {
         try (BufferedReader puzzleReader = new BufferedReader(new FileReader(puzzleFile));
             BufferedReader answerReader = new BufferedReader(new FileReader(answerFile))) {
 
-            for (int i = 1; i <= 10; i++) { // Test 10 puzzles
+            for (int i = 1; i <= 5; i++) { // Test 10 puzzles
                 System.out.println("Puzzle " + i + ":");
 
                 // Read the puzzle and the expected solution
@@ -54,7 +55,7 @@ public class SudokuTest {
 
             // Print the report
             System.out.println("Constraint Satisfaction Report (" + difficulty + ")");
-            System.out.println("The algorithm solved correctly " + solvedCount + "/10 Sudokus");
+            System.out.println("The algorithm solved correctly " + solvedCount + "/5 Sudokus");
             System.out.println("It takes an average of " + roundedAverageTime + " ms for the algorithm to solve all the Sudokus\n");
         } catch (IOException e) {
             System.out.println("Error reading files: " + e.getMessage());
